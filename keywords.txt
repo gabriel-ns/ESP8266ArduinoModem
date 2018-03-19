@@ -1,0 +1,20 @@
+# Classes
+ESP8266Modem	KEYWORD1
+
+# Data types
+
+# Constants
+
+# Functions
+isPresent	KEYWORD2
+connectWifi	KEYWORD2
+disconnectWifi	KEYWORD2
+showNetworkStatus	KEYWORD2
+swReset	KEYWORD2
+setHwResetPin	KEYWORD2
+hwReset	KEYWORD2
+connectToServer	KEYWORD2
+httpGet	KEYWORD2
+sendModemCommand	KEYWORD2
+enableDebug	KEYWORD2
+disableDebug	KEYWORD2
