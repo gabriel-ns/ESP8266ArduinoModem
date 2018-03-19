@@ -98,6 +98,8 @@ String ESP8266Modem::httpGet(String data)
 		/* Quebra o loop se o OK for encontrado */
 		if(response.indexOf("+IPD") != -1)
 		{
+			//todo Find a better way to do this...
+			//     try not to go horse again
 			debug_print("Got IPD. Reading...");
 			response = _rxSerial->readString();
 			response += _rxSerial->readString();
