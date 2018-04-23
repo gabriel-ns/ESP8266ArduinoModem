@@ -34,6 +34,7 @@ bool ESP8266Modem::isPresent(uint16_t timeout, uint8_t retries)
 String ESP8266Modem::connectWifi(const char * ssid, const char * password, uint16_t timeout)
 {
 	String cmd = "AT+CWJAP=\"" + String(ssid) + "\",\"" + String(password) + "\"\r\n";
+	sendModemCommand("AT+CWMODE=3", 1000);
 	return sendModemCommand(cmd.c_str(), timeout);
 
 }
