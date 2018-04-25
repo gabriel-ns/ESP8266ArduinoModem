@@ -18,7 +18,8 @@ void setup()
   Serial.begin(115200);
   Serial.setTimeout(10);
   espSerial.begin(115200);
-
+  ESP.enableDebug();
+  
   pinMode(A0, INPUT);
   pinMode(LED_PIN, OUTPUT);
 
@@ -28,6 +29,8 @@ void setup()
   {
     delay(100);
   }
+
+  ESP.connectWifi(ssid, pw);
 }
 
 void loop()
