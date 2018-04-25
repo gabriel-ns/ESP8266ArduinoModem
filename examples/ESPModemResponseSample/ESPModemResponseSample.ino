@@ -25,6 +25,8 @@ void setup()
 
   Serial.println("Starting firmware");
 
+  ESP.swReset();
+
   while (!ESP.isPresent())
   {
     delay(100);
@@ -38,9 +40,11 @@ void loop()
   String response = ESP.connectToServer("TCP", "appscripts.herokuapp.com", 80);
   Serial.println(response);
   String req = "GET " + String(script);
-  req += "&value=" + String(millis());
+  req += "value=" + String(millis());
+//  req += "&temperature=" + String(analogRead(A0)); // An example to add a new parameter. Don't forget the & separator!
   req += " HTTP/1.1\r\nHost: appscripts.herokuapp.com\r\n";
-  req += " Conection: close\r\n\r\n";
+  req += "Connection: close\r\n\r\n";
+  Serial.println("Request: " + req);
 
   response = ESP.httpGet(req);
   Serial.println(response);
