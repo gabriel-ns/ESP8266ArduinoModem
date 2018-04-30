@@ -34,7 +34,7 @@ bool ESP8266Modem::isPresent(uint16_t timeout, uint8_t retries)
 String ESP8266Modem::connectWifi(const char * ssid, const char * password, uint16_t timeout)
 {
 	String cmd = "AT+CWJAP=\"" + String(ssid) + "\",\"" + String(password) + "\"\r\n";
-	sendModemCommand("AT+CWMODE=3", 1000);
+	debug_print(sendModemCommand("AT+CWMODE=3\r\n", 2500));
 	return sendModemCommand(cmd.c_str(), timeout);
 
 }
@@ -51,7 +51,9 @@ String ESP8266Modem::showNetworkStatus()
 
 String ESP8266Modem::swReset()
 {
-	return sendModemCommand(F("AT+RST\r\n"), 1000);
+	String rsp = sendModemCommand(F("AT+RST\r\n"), 1000);
+	delay(500);
+	return rsp;
 }
 
 String ESP8266Modem::connectToServer(String type, String server, uint16_t port)
@@ -96,15 +98,18 @@ String ESP8266Modem::httpGet(String data)
 	while(millis() < (currentTime + timeout))
 	{
 		while(_rxSerial->available()) response += (char) _rxSerial->read();
+		delay(5);
 		/* Quebra o loop se o OK for encontrado */
 		if(response.indexOf("+IPD") != -1)
 		{
-			//todo Find a better way to do this...
-			//     try not to go horse again
 			debug_print("Got IPD. Reading...");
 			response = _rxSerial->readString();
-			response += _rxSerial->readString();
-			response += _rxSerial->readString();
+			delay(5);
+			while(_rxSerial->available()) 
+			{
+				response += _rxSerial->readString();
+				delay(5);
+			}
 			success = true;
 			break;
 		}
@@ -172,6 +177,7 @@ void ESP8266Modem::hwReset()
 	digitalWrite(_rstPin, LOW);
 	delay(10);
 	digitalWrite(_rstPin, HIGH);
+	delay(500);
 }
 
 void ESP8266Modem::enableDebug()
