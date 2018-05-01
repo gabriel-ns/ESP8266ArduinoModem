@@ -18,7 +18,7 @@ public:
 	void hwReset();
 
 	String connectToServer(String type, String server, uint16_t port);
-	String httpGet(String data);
+	String httpGet(String data, uint16_t timeout_ms = 3000);
 
 	String sendModemCommand(String cmd, uint16_t timeout=500);
 

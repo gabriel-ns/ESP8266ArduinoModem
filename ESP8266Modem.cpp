@@ -62,7 +62,7 @@ String ESP8266Modem::connectToServer(String type, String server, uint16_t port)
 	return sendModemCommand(cmd, 10000);
 }
 
-String ESP8266Modem::httpGet(String data)
+String ESP8266Modem::httpGet(String data, uint16_t timeout_ms)
 {
 	debug_print("Send request");
 	String response = sendModemCommand("AT+CIPSEND=" + String(data.length()) + "\r\n", 3000);
@@ -70,9 +70,8 @@ String ESP8266Modem::httpGet(String data)
 
 	bool success = false;
 	uint32_t currentTime = millis();
-	uint16_t timeout = 1000;
 
-	while(millis() < (currentTime + timeout))
+	while(millis() < (currentTime + 1000))
 	{
 		while(_rxSerial->available()) response += (char) _rxSerial->read();
 		/* Quebra o loop se o OK for encontrado */
@@ -92,12 +91,11 @@ String ESP8266Modem::httpGet(String data)
 
 	success = false;
 	currentTime = millis();
-	timeout = 3000;
 	debug_print("Waiting for +IPD");
 	uint16_t rcvdBytes = 0;
 	uint16_t IPDSize = 0;
 
-	while(millis() < (currentTime + timeout))
+	while(millis() < (currentTime + timeout_ms))
 	{
 		while(_rxSerial->available()) response += (char) _rxSerial->read();
 
@@ -118,7 +116,7 @@ String ESP8266Modem::httpGet(String data)
 					rcvdBytes++;
 				}
 
-				if(millis() > (currentTime + timeout))
+				if(millis() > (currentTime + timeout_ms))
 				{
 					debug_print("Receiving timed out...");
 					break;
