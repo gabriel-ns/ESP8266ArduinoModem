@@ -94,33 +94,54 @@ String ESP8266Modem::httpGet(String data)
 	currentTime = millis();
 	timeout = 3000;
 	debug_print("Waiting for +IPD");
+	uint16_t rcvdBytes = 0;
+	uint16_t IPDSize = 0;
 
 	while(millis() < (currentTime + timeout))
 	{
 		while(_rxSerial->available()) response += (char) _rxSerial->read();
-		delay(5);
-		/* Quebra o loop se o OK for encontrado */
-		if(response.indexOf("+IPD") != -1)
+
+		if(response.indexOf("+IPD,") != -1 && response.indexOf(":") != -1)
 		{
 			debug_print("Got IPD. Reading...");
-			response = _rxSerial->readString();
-			delay(5);
-			while(_rxSerial->available()) 
+
+			String sizeString = response.substring(response.indexOf("+IPD,") + 5, response.indexOf(":"));
+			
+			IPDSize = sizeString.toInt();
+			debug_print("Total response size: str(" + sizeString + ") | int(" + String(IPDSize) + ")");
+
+			while(rcvdBytes < IPDSize) 
 			{
-				response += _rxSerial->readString();
-				delay(5);
+				if(_rxSerial->available() > 0)
+				{
+					response += String((char) _rxSerial->read());
+					rcvdBytes++;
+				}
+
+				if(millis() > (currentTime + timeout))
+				{
+					debug_print("Receiving timed out...");
+					break;
+				}
 			}
+
 			success = true;
 			break;
 		}
 	}
 
-	if(!success) {
-		debug_print("Error, timed out");
+	if(!success) 
+	{
+		debug_print("Error, timed out without response");
 		response += "\nTimed out.";
 	}
+	else
+	{
+		debug_print("Received " + String(rcvdBytes) + " from " + String(IPDSize));
+	}
 
-	debug_print("Done." + String(Serial.available()) + "\n");
+	
+	debug_print("Done.\n");
 
 	return response;
 }
